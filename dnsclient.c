@@ -1,7 +1,7 @@
 #include <stdio.h>	//printf
-#include <stdlib>    //malloc
+#include <stdlib>       //malloc
 #include <string.h>	//strlen
-#include <unistd.h>  // getpid
+#include <unistd.h>     // getpid
 #include <sys/socket.h>	//you know what this is for
 #include <arpa/inet.h>	//inet_addr , inet_ntoa , ntohs etc
 #include <netinet/in.h>
@@ -27,24 +27,24 @@ void get_dns_servers();
 // DNS header structure
 struct DNS_HEADER
 {
-	unsigned short id; // identification number
+	unsigned short id;       // identification number
 
-	unsigned char rd :1; // recursion desired
-	unsigned char tc :1; // truncated message
-	unsigned char aa :1; // authoritive answer
+	unsigned char rd :1;     // recursion desired
+	unsigned char tc :1;     // truncated message
+	unsigned char aa :1;     // authoritive answer
 	unsigned char opcode :4; // purpose of message
-	unsigned char qr :1; // query/response flag
+	unsigned char qr :1;     // query/response flag
 
 	unsigned char rcode :4; // response code
-	unsigned char cd :1; // checking disabled
-	unsigned char ad :1; // authenticated data
-	unsigned char z :1; // its z! reserved
-	unsigned char ra :1; // recursion available
+	unsigned char cd :1;    // checking disabled
+	unsigned char ad :1;    // authenticated data
+	unsigned char z :1;     // its z! reserved
+	unsigned char ra :1;    // recursion available
 
-	unsigned short q_count; // number of question entries
-	unsigned short ans_count; // number of answer entries
+	unsigned short q_count;    // number of question entries
+	unsigned short ans_count;  // number of answer entries
 	unsigned short auth_count; // number of authority entries
-	unsigned short add_count; // number of resource entries
+	unsigned short add_count;  // number of resource entries
 };
 
 // Constant sized fields of query structure
@@ -85,14 +85,14 @@ int main( int argc , char *argv[])
 {
 	unsigned char hostname[100];
 
-	//Get the DNS servers from the resolv.conf file
+	// Get the DNS servers from the resolv.conf file
 	get_dns_servers();
 	
-	//Get the hostname from the terminal
+	// Get the hostname from the terminal
 	printf("Enter Hostname to Lookup : ");
 	scanf("%s" , hostname);
 	
-	//Now get the ip of this hostname , A record
+	// Get the ip of this hostname , A record
 	ngethostbyname(hostname , T_A);
 
 	return 0;
@@ -107,7 +107,7 @@ void ngethostbyname(unsigned char *host , int query_type)
 
 	struct sockaddr_in a;
 
-	struct RES_RECORD answers[20],auth[20],addit[20]; //the replies from the DNS server
+	struct RES_RECORD answers[20],auth[20],addit[20]; // the replies from the DNS server
 	struct sockaddr_in dest;
 
 	struct DNS_HEADER *dns = NULL;
@@ -115,22 +115,22 @@ void ngethostbyname(unsigned char *host , int query_type)
 
 	printf("Resolving %s" , host);
 
-	s = socket(AF_INET , SOCK_DGRAM , IPPROTO_UDP); //UDP packet for DNS queries
+	s = socket(AF_INET , SOCK_DGRAM , IPPROTO_UDP); // UDP packet for DNS queries
 
 	dest.sin_family = AF_INET;
 	dest.sin_port = htons(53);
-	dest.sin_addr.s_addr = inet_addr(dns_servers[0]); //dns servers
+	dest.sin_addr.s_addr = inet_addr(dns_servers[0]); // DNS servers
 
 	// Set the DNS structure to standard queries
 	dns = (struct DNS_HEADER *)&buf;
 
 	dns->id = (unsigned short) htons(getpid());
-	dns->qr = 0; //This is a query
-	dns->opcode = 0; //This is a standard query
-	dns->aa = 0; //Not Authoritative
-	dns->tc = 0; //This message is not truncated
-	dns->rd = 1; //Recursion Desired
-	dns->ra = 0; //Recursion not available! hey we dont have it (lol)
+	dns->qr = 0;     // This is a query
+	dns->opcode = 0; // This is a standard query
+	dns->aa = 0;     // Not Authoritative
+	dns->tc = 0;     // This message is not truncated
+	dns->rd = 1;     // Recursion Desired
+	dns->ra = 0;     // Recursion not available
 	dns->z = 0;
 	dns->ad = 0;
 	dns->cd = 0;
@@ -146,8 +146,8 @@ void ngethostbyname(unsigned char *host , int query_type)
 	ChangetoDnsNameFormat(qname , host);
 	qinfo =(struct QUESTION*)&buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname) + 1)]; //fill it
 
-	qinfo->qtype = htons( query_type ); //type of the query , A , MX , CNAME , NS etc
-	qinfo->qclass = htons(1); //its internet (lol)
+	qinfo->qtype = htons( query_type ); // type of the query , A , MX , CNAME , NS etc
+	qinfo->qclass = htons(1);           // its internet
 
 	printf("\nSending Packet...");
 	if( sendto(s,(char*)buf,sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION),0,(struct sockaddr*)&dest,sizeof(dest)) < 0)
@@ -167,7 +167,7 @@ void ngethostbyname(unsigned char *host , int query_type)
 
 	dns = (struct DNS_HEADER*) buf;
 
-	//move ahead of the dns header and the query field
+	// move ahead of the dns header and the query field
 	reader = &buf[sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];
 
 	printf("\nThe response contains : ");
@@ -220,7 +220,7 @@ void ngethostbyname(unsigned char *host , int query_type)
 		reader+=stop;
 	}
 
-	//read additional
+	// read additional
 	for(i=0;i<ntohs(dns->add_count);i++)
 	{
 		addit[i].name=ReadName(reader,buf,&stop);
@@ -353,9 +353,7 @@ u_char* ReadName(unsigned char* reader,unsigned char* buffer,int* count)
 	return name;
 }
 
-/*
- * Get the DNS servers from /etc/resolv.conf file on Linux
- * */
+/* Get the DNS servers from /etc/resolv.conf file on Linux */
 void get_dns_servers()
 {
 	FILE *fp;
