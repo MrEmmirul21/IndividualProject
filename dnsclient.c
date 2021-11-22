@@ -11,12 +11,12 @@ char dns_servers[10][100];
 int dns_server_count = 0;
 
 // Types of DNS resource records :)
-#define T_A 1 //Ipv4 address
-#define T_NS 2 //Nameserver
-#define T_CNAME 5 // canonical name
-#define T_SOA 6 /* start of authority zone */
-#define T_PTR 12 /* domain name pointer */
-#define T_MX 15 //Mail server
+#define T_A 1      // Ipv4 address
+#define T_NS 2     // Nameserver
+#define T_CNAME 5  // canonical name
+#define T_SOA 6    // start of authority zone
+#define T_PTR 12   // domain name pointer
+#define T_MX 15    // Mail server
 
 // Function Prototypes
 void ngethostbyname (unsigned char* , int);
