@@ -1,5 +1,5 @@
 #include <stdio.h>	//printf
-#include <stdlib>       //malloc
+#include <stdlib.h>     //malloc
 #include <string.h>	//strlen
 #include <unistd.h>     // getpid
 #include <sys/socket.h>	//you know what this is for
@@ -35,11 +35,11 @@ struct DNS_HEADER
 	unsigned char opcode :4; // purpose of message
 	unsigned char qr :1;     // query/response flag
 
-	unsigned char rcode :4; // response code
-	unsigned char cd :1;    // checking disabled
-	unsigned char ad :1;    // authenticated data
-	unsigned char z :1;     // its z! reserved
-	unsigned char ra :1;    // recursion available
+	unsigned char rcode :4;  // response code
+	unsigned char cd :1;     // checking disabled
+	unsigned char ad :1;     // authenticated data
+	unsigned char z :1;      // its z! reserved
+	unsigned char ra :1;     // recursion available
 
 	unsigned short q_count;    // number of question entries
 	unsigned short ans_count;  // number of answer entries
@@ -87,11 +87,11 @@ int main( int argc , char *argv[])
 
 	// Get the DNS servers from the resolv.conf file
 	get_dns_servers();
-	
+
 	// Get the hostname from the terminal
 	printf("Enter Hostname to Lookup : ");
 	scanf("%s" , hostname);
-	
+
 	// Get the ip of this hostname , A record
 	ngethostbyname(hostname , T_A);
 
@@ -155,7 +155,7 @@ void ngethostbyname(unsigned char *host , int query_type)
 		perror("sendto failed");
 	}
 	printf("Done");
-	
+
 	// receive the answer
 	i = sizeof dest;
 	printf("\nReceiving answer...");
@@ -258,8 +258,8 @@ void ngethostbyname(unsigned char *host , int query_type)
 			a.sin_addr.s_addr=(*p); //working without ntohl
 			printf("has IPv4 address : %s",inet_ntoa(a.sin_addr));
 		}
-		
-		if(ntohs(answers[i].resource->type)==5) 
+
+		if(ntohs(answers[i].resource->type)==5)
 		{
 			//Canonical name for an alias
 			printf("has alias name : %s",answers[i].rdata);
@@ -272,7 +272,7 @@ void ngethostbyname(unsigned char *host , int query_type)
 	printf("\nAuthoritive Records : %d \n" , ntohs(dns->auth_count) );
 	for( i=0 ; i < ntohs(dns->auth_count) ; i++)
 	{
-		
+
 		printf("Name : %s ",auth[i].name);
 		if(ntohs(auth[i].resource->type)==2)
 		{
@@ -339,10 +339,10 @@ u_char* ReadName(unsigned char* reader,unsigned char* buffer,int* count)
 	}
 
 	//now convert 3www6google3com0 to www.google.com
-	for(i=0;i<(int)strlen((const char*)name);i++) 
+	for(i=0;i<(int)strlen((const char*)name);i++)
 	{
 		p=name[i];
-		for(j=0;j<(int)p;j++) 
+		for(j=0;j<(int)p;j++)
 		{
 			name[i]=name[i+1];
 			i=i+1;
@@ -362,7 +362,7 @@ void get_dns_servers()
 	{
 		printf("Failed opening /etc/resolv.conf file \n");
 	}
-	
+
 	while(fgets(line , 200 , fp))
 	{
 		if(line[0] == '#')
@@ -373,31 +373,28 @@ void get_dns_servers()
 		{
 			p = strtok(line , " ");
 			p = strtok(NULL , " ");
-			
+
 			//p now is the dns ip :)
 			//????
 		}
 	}
-	
+
 	strcpy(dns_servers[0] , "208.67.222.222");
 	strcpy(dns_servers[1] , "208.67.220.220");
 }
 
-/*
- * This will convert www.google.com to 3www6google3com 
- * got it :)
- * */
-void ChangetoDnsNameFormat(unsigned char* dns,unsigned char* host) 
+/* This will convert www.google.com to 3www6google3com got it :) */
+void ChangetoDnsNameFormat(unsigned char* dns,unsigned char* host)
 {
 	int lock = 0 , i;
 	strcat((char*)host,".");
-	
-	for(i = 0 ; i < strlen((char*)host) ; i++) 
+
+	for(i = 0 ; i < strlen((char*)host) ; i++)
 	{
-		if(host[i]=='.') 
+		if(host[i]=='.')
 		{
 			*dns++ = i-lock;
-			for(;lock<i;lock++) 
+			for(;lock<i;lock++)
 			{
 				*dns++=host[lock];
 			}
