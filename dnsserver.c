@@ -50,13 +50,13 @@ int main(int argc, char *argv[])
    // assigning IP address and PORT
    server.sin_family = AF_INET;
    server.sin_addr.s_addr = INADDR_ANY;
-   server.sin_port = htons(PORT);
+   server.sin_port = htons(8888);
 
    // binding newly created socket to given IP and verification
    if( bind(socket_desc,(struct sockaddr *)&server,sizeof(server)) == -1)
    {
       printf("socket bind failed :(\n");
-      exit(-1);
+      return 1;
    }
    else
       printf("Socket successfully binded...\n");
@@ -68,17 +68,19 @@ int main(int argc, char *argv[])
    puts("Waiting for connection from client");
    c = sizeof(struct sockaddr_in);
 
-   new_socket = accept(socket_desc,(struct sockaddr *)&client,(socklen_t *)&c);
+   while( (new_socket = accept(socket_desc,(struct sockaddr *)&client,(socklen_t *)&c)) )
+   {
+      puts("Connection accepted");
+
+      // function for getting IP address by domain name
+      func(new_socket);
+   }
+
    if(new_socket < 0)
    {
       puts("accept failed...\n");
-      exit(0);
+      return 1;
    }
-   else
-      printf("Accept successfully...\n");
-
-   // function for getting IP address by domain name
-   func(new_socket);
 
    close(socket_desc);
 
