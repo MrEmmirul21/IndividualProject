@@ -1,10 +1,10 @@
 #include <stdio.h>       // printf()
 #include <stdlib.h>
-#include <unistd.h>      // write()
-#include <string.h>
+#include <unistd.h>      // close()
+#include <string.h>      // strcpy()
 #include <sys/socket.h>  // sockaddr_in
-#include <arpa/inet.h>
-#include <netdb.h>
+#include <arpa/inet.h>   // inet_addr
+#include <netdb.h>       // hostent
 #define PORT 53
 
 void func(int new_socket)
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
    if( bind(socket_desc,(struct sockaddr *)&server,sizeof(server)) == -1)
    {
       printf("socket bind failed :(\n");
-      exit(-1);
+      return 1;
    }
    else
       printf("Socket successfully binded...\n");
@@ -68,17 +68,19 @@ int main(int argc, char *argv[])
    puts("Waiting for connection from client");
    c = sizeof(struct sockaddr_in);
 
-   new_socket = accept(socket_desc,(struct sockaddr *)&client,(socklen_t *)&c);
+   while( (new_socket = accept(socket_desc,(struct sockaddr *)&client,(socklen_t *)&c)) )
+   {
+      puts("Connection accepted");
+
+      // function for getting IP address by domain name
+      func(new_socket);
+   }
+
    if(new_socket < 0)
    {
       puts("accept failed...\n");
-      exit(0);
+      return 1;
    }
-   else
-      printf("Accept successfully...\n");
-
-   // function for getting IP address by domain name
-   func(new_socket);
 
    close(socket_desc);
 
