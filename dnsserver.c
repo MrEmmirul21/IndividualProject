@@ -1,10 +1,10 @@
 #include <stdio.h>       // printf()
 #include <stdlib.h>
-#include <unistd.h>      // write()
-#include <string.h>
+#include <unistd.h>      // close()
+#include <string.h>      // strcpy()
 #include <sys/socket.h>  // sockaddr_in
-#include <arpa/inet.h>
-#include <netdb.h>
+#include <arpa/inet.h>   // inet_addr
+#include <netdb.h>       // hostent
 #define PORT 53
 
 void func(int new_socket)
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
    // assigning IP address and PORT
    server.sin_family = AF_INET;
    server.sin_addr.s_addr = INADDR_ANY;
-   server.sin_port = htons(53);
+   server.sin_port = htons(PORT);
 
    // binding newly created socket to given IP and verification
    if( bind(socket_desc,(struct sockaddr *)&server,sizeof(server)) == -1)
