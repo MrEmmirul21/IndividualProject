@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
    // assigning IP address and PORT
    server.sin_family = AF_INET;
    server.sin_addr.s_addr = INADDR_ANY;
-   server.sin_port = htons(8888);
+   server.sin_port = htons(53);
 
    // binding newly created socket to given IP and verification
    if( bind(socket_desc,(struct sockaddr *)&server,sizeof(server)) == -1)
