@@ -1,9 +1,9 @@
-#include <stdio.h>
+#include <stdio.h>      // printf()
 #include <stdlib.h>
-#include <unistd.h>
-#include <string.h>  //strlen()
-#include <sys/socket.h>
-#include <arpa/inet.h>  //inet_addr
+#include <unistd.h>     // close()
+#include <string.h>     // strlen()
+#include <sys/socket.h> // sockaddr_in
+#include <arpa/inet.h>  // inet_addr
 #define PORT 53
 
 int main(int argc,char *argv[])
@@ -25,7 +25,7 @@ int main(int argc,char *argv[])
    // assigning DNS IP address and DNS port
    server.sin_addr.s_addr = inet_addr("192.168.170.14");
    server.sin_family = AF_INET;
-   server.sin_port = htons(8888);
+   server.sin_port = htons(PORT);
 
    // connect to DNS server
    if(connect(socket_desc,(struct sockaddr *)&server,sizeof(server)) < 0)
@@ -57,6 +57,8 @@ int main(int argc,char *argv[])
          puts("Receiving failed !");
       }
       puts("Done");
+
+      // display domain name and IP address
       printf("\nName : %s \nAddress : ",domain_name);
       puts(server_respond);
 
